@@ -7,6 +7,7 @@ require 'simple-rss'
 require 'open-uri'
 require 'scrapi'
 require 'yaml'
+require 'htmlentities'
 require 'bitly'
 require 'twitter'
 
@@ -22,6 +23,8 @@ newest = 0
 if File.exists? SAVE_FILE then
   newest = File.read(SAVE_FILE).strip.to_i
 end
+
+entities = HTMLEntities.new
 
 # setup bitly
 Bitly.use_api_version_3
@@ -45,7 +48,7 @@ end
 # process rss feed
 rss = SimpleRSS.parse(open(URL))
 rss.items.reverse.each do |item|
-  title = item[:title]
+  title = entities.decode(item[:title].strip)
   date = item[:pubDate]
   link = item[:feedburner_origLink]
 
