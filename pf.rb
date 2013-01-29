@@ -82,7 +82,11 @@ rss.items.reverse.each do |item|
   end
 
   # tweet it
-  Twitter.update(s)
+  begin
+    Twitter.update(s)
+  rescue Exception => ex
+    puts "error posting to twitter: #{ex.message}"
+  end
 end
 
 File.open(SAVE_FILE, 'w') { |f| f.write(newest) }
