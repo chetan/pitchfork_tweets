@@ -13,7 +13,7 @@ require 'twitter'
 
 CONF_FILE = File.join(File.expand_path(File.dirname(__FILE__)), "conf.yaml")
 SAVE_FILE = File.join(File.expand_path(File.dirname(__FILE__)), "pf-save.txt")
-URL = "http://feeds2.feedburner.com/PitchforkAlbumReviews"
+URL = "http://pitchfork.com/rss/reviews/albums/"
 
 # load config
 config = YAML.load(File.read(CONF_FILE))
@@ -48,9 +48,10 @@ end
 # process rss feed
 rss = SimpleRSS.parse(open(URL))
 rss.items.reverse.each do |item|
+
   title = entities.decode(item[:title].strip)
   date = item[:pubDate]
-  link = item[:feedburner_origLink]
+  link = item[:link]
 
   next if date.to_i <= newest
   newest = date.to_i
@@ -80,6 +81,8 @@ rss.items.reverse.each do |item|
     puts "not enough space for short_url:"
     puts s
   end
+
+  # puts s
 
   # tweet it
   begin
