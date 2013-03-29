@@ -89,6 +89,7 @@ rss.items.reverse.each do |item|
     Twitter.update(s)
   rescue Exception => ex
     puts "error posting to twitter: #{ex.message}"
+    exit 1
   end
 end
 
