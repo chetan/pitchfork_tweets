@@ -31,17 +31,17 @@ Bitly.use_api_version_3
 bitly = Bitly.new(config["bitly_user"], config["bitly_key"])
 
 # setup twitter
-Twitter.configure do |c|
-  c.consumer_key       = config["consumer_key"]
-  c.consumer_secret    = config["consumer_secret"]
-  c.oauth_token        = config["access_token"]
-  c.oauth_token_secret = config["access_token_secret"]
+twitter_client = Twitter::REST::Client.new do |c|
+  c.consumer_key        = config["consumer_key"]
+  c.consumer_secret     = config["consumer_secret"]
+  c.access_token        = config["access_token"]
+  c.access_token_secret = config["access_token_secret"]
 end
 
 # setup scrapi
 score_scraper = Scraper.define do
   process "span.score", :score => :text
-  process "div.bnm-label", :label => :text
+  process "p.bnm-text", :label => :text
   result :score, :label
 end
 
@@ -63,7 +63,7 @@ rss.items.reverse.each do |item|
     next
   end
   score = ret.score.strip
-  label = ret.label.strip
+  label = ret.label ? ret.label.strip : nil
 
   short_url = bitly.shorten(link).short_url || link
   short_url.gsub!(%r{^http://}, '') # strip http:// to save some chars
@@ -82,10 +82,11 @@ rss.items.reverse.each do |item|
   end
 
   puts s
+  next
 
   # tweet it
   begin
-    Twitter.update(s)
+    twitter_client.update(s)
   rescue Exception => ex
     puts "error posting to twitter: #{ex.message}"
     #exit 1
@@ -93,4 +94,3 @@ rss.items.reverse.each do |item|
 end
 
 File.open(SAVE_FILE, 'w') { |f| f.write(newest) }
-
