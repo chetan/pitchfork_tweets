@@ -82,7 +82,7 @@ rss.items.reverse.each do |item|
   end
 
   puts s
-  next
+  #next
 
   # tweet it
   begin
