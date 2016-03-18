@@ -79,18 +79,18 @@ rss.items.reverse.each do |item|
     s += short_url
   else
     puts "not enough space for short_url:"
-    puts s
   end
 
-  # puts s
+  puts s
 
   # tweet it
   begin
     Twitter.update(s)
   rescue Exception => ex
     puts "error posting to twitter: #{ex.message}"
-    exit 1
+    #exit 1
   end
 end
 
 File.open(SAVE_FILE, 'w') { |f| f.write(newest) }
+
