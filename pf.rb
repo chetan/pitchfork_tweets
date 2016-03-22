@@ -45,6 +45,8 @@ score_scraper = Scraper.define do
   result :score, :label
 end
 
+last_date = nil
+
 # process rss feed
 rss = SimpleRSS.parse(open(URL))
 rss.items.reverse.each do |item|
@@ -54,7 +56,7 @@ rss.items.reverse.each do |item|
   link = item[:link]
 
   next if date.to_i <= newest
-  newest = date.to_i
+  last_date = date.to_i
 
   ret = score_scraper.scrape(URI.parse(link))
   if not ret.score then
@@ -82,7 +84,7 @@ rss.items.reverse.each do |item|
   end
 
   puts s
-  #next
+  # next
 
   # tweet it
   begin
@@ -93,4 +95,5 @@ rss.items.reverse.each do |item|
   end
 end
 
+newest = last_date
 File.open(SAVE_FILE, 'w') { |f| f.write(newest) }
